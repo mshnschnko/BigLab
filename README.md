@@ -5,6 +5,17 @@
 npm install
 ```
 
+### vue installing
+```
+npm install vue
+```
+
+### vuetify install
+```
+vue add vuetify
+```
+Choose the 'Vuetify3 CLI'
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
