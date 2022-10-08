@@ -7,14 +7,13 @@
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
 import MainTab from "@/components/MainTab";
 
 export default {
   name: 'App',
 
   components: {
-    // eslint-disable-next-line vue/no-unused-components
     MainTab
   },
 
