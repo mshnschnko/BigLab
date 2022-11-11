@@ -6,6 +6,8 @@ node_modules
 # local env files
 .env.local
 .env.*.local
+backend/.venv/*
+backend/secrets.py
 
 # Log files
 npm-debug.log*
