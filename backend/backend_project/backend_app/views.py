@@ -14,6 +14,36 @@ pattern = {
     "studentteacher": nt(StudentTeacher, StudentTeacherSerializer),
     "profiletype": nt(ProfileTypes, ProfileTypeSerializer),
 }
+@api_view(["GET", "POST"])
+def ProfileTypesRequest(request):
+    object =  pattern.get("profiletype", None)
+    # Users.objects.all().delete()
+    if object == None:
+        return Response(
+            data   = "Invalid URL",
+            status = status.HTTP_404_NOT_FOUND,
+        )
+    if request.method == "GET":
+        object_list = object.model.objects.all()
+        serializers  = object.serializers(object_list, many=True)
+        print(serializers.data)
+        return Response(serializers.data)
+
+    if request.method == "POST":
+        data = request.data
+        print(data)
+        serializers = object.serializers(data=data)
+        
+        if not serializers.is_valid():
+            return Response(
+                data   = serializers.error,
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializers.save()
+        return Response(
+                #data   = serializers.error,
+                status = status.HTTP_201_CREATED
+        )
 
 @api_view(["GET"])
 def GetAllUsers(request):
@@ -41,7 +71,8 @@ def GetUser(request, userid):
     if request.method == "GET":
         object_list = object.model.objects.filter(id=userid)
         serializers  = object.serializers(object_list, many=True)
-        return Response(serializers.data)
+        print(serializers.data)
+        return Response(serializers.data) if serializers.data != [] else Response(data = "There is no user with this ID", status=status.HTTP_404_NOT_FOUND)
 
 @api_view(["POST"])
 def CreateUser(request):
