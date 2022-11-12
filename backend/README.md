@@ -59,3 +59,5 @@ Django version 4.1.2, using settings 'backend_project.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 ```
+### Postman collection
+You can view and use saved postman queries from [here](https://www.postman.com/red-desert-966457/workspace/466aa933-735d-43c5-b789-33da3fa6972c/collection/23776847-a167546e-848a-4262-8c73-5e2cfefe5ce1?action=share&creator=23776847)
