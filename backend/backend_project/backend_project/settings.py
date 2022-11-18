@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'backend_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'APIdb',
+        'NAME': 'API_db',
         'USER': 'postgres',
         'PASSWORD': '87878987',
         'HOST': '127.0.0.1',
@@ -124,6 +124,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = 'backend_app.Users'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
