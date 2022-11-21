@@ -16,6 +16,7 @@ pattern = {
     "message"   : nt(Messages, MessagesSerializer),
     "studentteacher": nt(StudentTeacher, StudentTeacherSerializer),
     "profiletype": nt(ProfileTypes, ProfileTypeSerializer),
+    "subject": nt(Subjects, SubjectSerializer),
 }
 
 @api_view(["GET", "POST"])
@@ -62,6 +63,25 @@ def GetAllUsers(request):
     if request.method == "GET":
         object_list = object.model.objects.all()
         serializers  = object.serializers(object_list, many=True)
+        ret_data = []
+        for user in serializers.data:
+            ret_data.append({'id': user['id'],
+                            'name': user['name'],
+                            'email': user['email'],
+                            'profile_type': user['profile_type'],
+                            'subject': user['subject']})
+        return Response(
+            data = ret_data,
+            # data={
+            #     'id': serializers.data[0]['id'],
+            #     'name': serializers.data[0]['name'],
+            #     'email': serializers.data[0]['email'],
+            #     'profile_type': serializers.data[0]['profile_type']
+            #     },
+            status = status.HTTP_200_OK) if serializers.data != [] else Response(
+                                                                            data = "There is no user with this ID",
+                                                                            status=status.HTTP_404_NOT_FOUND
+                                                                        )
         return Response(serializers.data)
 
 @api_view(["GET"])
@@ -86,12 +106,24 @@ def GetUser(request):
                 data   = "Invalid URL",
                 status = status.HTTP_404_NOT_FOUND,
             )
-        ret_data = []
-        for user in serializers.data:
-            ret_data.append({'id': user['id'],
-                            'name': user['name'],
-                            'email': user['email'],
-                            'profile_type': user['profile_type']})
+        # ret_data = {'id': serializers.data[0]['id'],
+        #                     'name': serializers.data[0]['name'],
+        #                     'email': serializers.data[0]['email'],
+        #                     'profile_type': serializers.data[0]['profile_type']}
+        # for user in serializers.data:
+        #     ret_data.append({'id': user['id'],
+        #                     'name': user['name'],
+        #                     'email': user['email'],
+        #                     'profile_type': user['profile_type']})
+        ret_data = {
+                'id': serializers.data[0]['id'],
+                'name': serializers.data[0]['name'],
+                'email': serializers.data[0]['email'],
+                'profile_type': serializers.data[0]['profile_type']
+                }
+        if serializers.data[0]['profile_type'] == 3:
+            ret_data['subject'] = serializers.data[0]['subject']
+        print(serializers.data[0]['profile_type'])
         return Response(
             data = ret_data,
             # data={
@@ -129,18 +161,18 @@ def CheckUser(request):
                 status = status.HTTP_404_NOT_FOUND,
             )
         ret_data = {}
-        for user in serializers.data:
-            userAuth = authenticate(username=user['username'], password=userPassword)
-            if not userAuth is None:
-                ret_data = {'id': user['id'],
-                                'name': user['name'],
-                                'email': user['email'],
-                                'profile_type': user['profile_type']}
-            else:
-                return Response(
-                    data   = "Invalid email or password",
-                    status = status.HTTP_404_NOT_FOUND,
-                )
+        # for user in serializers.data:
+        userAuth = authenticate(username=serializers.data[0]['username'], password=userPassword)
+        if not userAuth is None:
+            ret_data = {'id': serializers.data[0]['id'],
+                            'name': serializers.data[0]['name'],
+                            'email': serializers.data[0]['email'],
+                            'profile_type': serializers.data[0]['profile_type']}
+        else:
+            return Response(
+                data   = "Invalid email or password",
+                status = status.HTTP_404_NOT_FOUND,
+            )
         return Response(
             data = ret_data,
             # data={
@@ -203,6 +235,91 @@ def Tasks(request):
     if request.method == "POST":
         data = request.data
         print(data)
+        serializers = object.serializers(data=data)
+        
+        if not serializers.is_valid():
+            return Response(
+                data   = serializers.error,
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializers.save()
+        return Response(
+                #data   = serializers.error,
+                status = status.HTTP_201_CREATED
+        )
+
+@api_view(["GET", "POST"])
+def SubjectsRequest(request):
+    subjid = request.GET.get("subjid", -1)
+    subj = request.GET.get("subjid", "")
+    object =  pattern.get("subject", None)
+    # Users.objects.all().delete()
+    if object == None:
+        return Response(
+            data   = "Invalid URL",
+            status = status.HTTP_404_NOT_FOUND,
+        )
+    if request.method == "GET":
+        if  subjid == -1 and subj == "":
+            object_list = object.model.objects.all()
+        else:
+            object_list = object.model.objects.filter(id=subjid) if subjid != -1 else object.model.objects.filter(subject=subj)
+        serializers  = object.serializers(object_list, many=True)
+        print(serializers.data)
+        return Response(serializers.data)
+
+    if request.method == "POST":
+        data = request.data
+        print(data)
+        serializers = object.serializers(data=data)
+        
+        if not serializers.is_valid():
+            return Response(
+                data   = serializers.error,
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializers.save()
+        return Response(
+                #data   = serializers.error,
+                status = status.HTTP_201_CREATED
+        )
+
+@api_view(["GET", "POST"])
+def StudentTeacherRequest(request):
+    studid = request.GET.get("studid", -1)
+    tutorid = request.GET.get("tutorid", -1)
+    object =  pattern.get("studentteacher", None)
+    # Users.objects.all().delete()
+    if object == None:
+        return Response(
+            data   = "Invalid URL",
+            status = status.HTTP_404_NOT_FOUND,
+        )
+    if request.method == "GET":
+        if  studid == -1 and tutorid == -1:
+            object_list = object.model.objects.all()
+        elif tutorid == -1:
+            object_list = object.model.objects.filter(student_id=studid)
+        elif studid == -1:
+            object_list = object.model.objects.filter(teacher_id=tutorid)
+        else:
+            object_list = object.model.objects.filter(student_id=studid) & object.model.objects.filter(teacher_id=tutorid)
+        serializers  = object.serializers(object_list, many=True)
+        print(serializers.data)
+        return Response(serializers.data)
+
+    if request.method == "POST":
+        data = request.data
+        users = Users.objects.filter(id = data['student_id']) | Users.objects.filter(id = data['teacher_id'])
+        serializers2  = pattern.get("user", None).serializers(users, many=True)
+        if not ((serializers2.data[0]['profile_type'] == 2 and serializers2.data[0]['id'] == int(data['student_id'])
+                and serializers2.data[1]['profile_type'] == 3 and serializers2.data[1]['id'] == int(data['teacher_id'])) or
+                (serializers2.data[1]['profile_type'] == 2 and serializers2.data[1]['id'] == int(data['student_id'])
+                and serializers2.data[0]['profile_type'] == 3 and serializers2.data[0]['id'] == int(data['teacher_id']))):
+                    return Response(
+                        data   = "Incorrect profile types",
+                        status = status.HTTP_404_NOT_FOUND
+                    )
         serializers = object.serializers(data=data)
         
         if not serializers.is_valid():

@@ -6,7 +6,7 @@ from django.contrib.auth.models import (
 )
 
 class ProfileTypes(models.Model):
-    profile_type = models.CharField(max_length = 10)
+    profile_type = models.CharField(max_length = 10, unique=True)
     
     def __str__(self) -> str:
         return self.profile_type
@@ -45,8 +45,10 @@ class Users(AbstractUser, PermissionsMixin):
     email = models.EmailField(db_index=True, unique=True, error_messages={
         'unique': "This email has already been registered"
     })
+
     name = models.CharField(max_length = 30)
     profile_type = models.IntegerField()
+    subject = models.IntegerField(default=0)
 
 # class Users(models.Model):
 #     name = models.CharField(max_length = 30)
@@ -69,7 +71,7 @@ class Tasks(models.Model):
 class StudentTeacher(models.Model):
     student_id = models.IntegerField()
     teacher_id = models.IntegerField()
-    subject = models.CharField(max_length = 40)
+    subject = models.IntegerField(default=0)
 
 class Messages(models.Model):
     from_id = models.IntegerField()
@@ -77,3 +79,6 @@ class Messages(models.Model):
     message_text = models.TextField()
     sending_time = models.DateTimeField()
     is_read = models.BooleanField(default=False)
+
+class Subjects(models.Model):
+    subject = models.CharField(max_length=20, unique=True)

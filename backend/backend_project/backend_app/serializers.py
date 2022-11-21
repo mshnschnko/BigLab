@@ -10,6 +10,11 @@ class ProfileTypeSerializer(serializers.ModelSerializer):
         model = ProfileTypes
         fields = "__all__"
 
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subjects
+        fields = "__all__"
+
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
@@ -36,3 +41,5 @@ class StudentTeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentTeacher
         fields = "__all__"
+
+    error = "ERROR"
