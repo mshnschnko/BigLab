@@ -83,13 +83,24 @@ WSGI_APPLICATION = 'backend_project.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'API_db',
+#         'USER': 'postgres',
+#         'PASSWORD': '87878987',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432'
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'API_db',
-        'USER': 'postgres',
-        'PASSWORD': '87878987',
-        'HOST': '127.0.0.1',
+        'NAME': 'mjcodpne',
+        'USER': 'mjcodpne',
+        'PASSWORD': 'k8w5aDoqKbnMbfFme5yqIquhspvjx3sx',
+        'HOST': 'mouse.db.elephantsql.com',
         'PORT': '5432'
     }
 }
