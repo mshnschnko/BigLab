@@ -3,7 +3,7 @@
     <v-sheet
         tile
         height="54"
-        class="d-flex"
+        class="d-flex rounded-lg"
     >
       <v-btn
           icon
