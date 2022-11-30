@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire">
+  <v-app id="main">
     <v-app-bar
         app
         color="white"
@@ -83,56 +83,38 @@
               <!--  -->
             </v-sheet>
           </v-col>
-          <v-col cols="2" v-if="page==='Задания'">
-            <v-sheet
-                class="overflow-y-auto rounded-l-lg"
-                min-height="80vh"
-                max-height="80vh"
-            >
-              <v-list
-                  class="rounded-l-lg"
-                  v-for="n in 15"
-                  :key="n"
-              >
-                <v-list-item
-                    link
-                    class="v-list-item--two-line"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      Задание №{{ n }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                      Some Text...
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-divider class="text-grey-lighten-1"></v-divider>
-              </v-list>
-              <!--  -->
-            </v-sheet>
+          <v-col cols="10" v-if="page==='Задания'">
+            <TasksTab/>
+<!--            <v-sheet-->
+<!--                class="overflow-y-auto rounded-l-lg"-->
+<!--                min-height="80vh"-->
+<!--                max-height="80vh"-->
+<!--            >-->
+<!--              <v-list-->
+<!--                  class="rounded-l-lg"-->
+<!--                  v-for="n in 15"-->
+<!--                  :key="n"-->
+<!--              >-->
+<!--                <v-list-item-->
+<!--                    link-->
+<!--                    class="v-list-item&#45;&#45;two-line"-->
+<!--                >-->
+<!--                  <v-list-item-content>-->
+<!--                    <v-list-item-title>-->
+<!--                      Задание №{{ n }}-->
+<!--                    </v-list-item-title>-->
+<!--                    <v-list-item-subtitle>-->
+<!--                      Some Text...-->
+<!--                    </v-list-item-subtitle>-->
+<!--                  </v-list-item-content>-->
+<!--                </v-list-item>-->
+<!--                <v-divider class="text-grey-lighten-1"></v-divider>-->
+<!--              </v-list>-->
+<!--              &lt;!&ndash;  &ndash;&gt;-->
+<!--            </v-sheet>-->
           </v-col>
           <v-col cols="8" v-if="page==='Преподаватели'">
-            <v-sheet
-                min-height="80vh"
-                max-height="80vh"
-                class="rounded-lg overflow-y-auto flex-wrap"
-            >
-              <v-list
-                  v-for="dialog in dialogs"
-                  :key="dialog"
-              >
-                <v-list-item link class="v-list-item--two-line">
-                  <!--                  <v-container>-->
-                  <v-avatar color="grey darken-1" size="32">
-                    <v-icon>{{dialog[0]}}</v-icon>
-                  </v-avatar>
-                  <v-list-item-title class="ml-3">{{ dialog }}</v-list-item-title>
-                  <!--                  </v-container>-->
-                </v-list-item>
-                <v-divider class="text-grey-lighten-1"></v-divider>
-              </v-list>
-            </v-sheet>
+            <TutorsTab/>
           </v-col>
           <v-col cols="10" v-if="page==='Расписание'">
             <CalendarWidget/>
@@ -166,11 +148,16 @@
 
 <script>
 import CalendarWidget from "@/components/CalendarWidget";
+import TasksTab from "@/components/TasksTab";
+import TutorsTab from "@/components/TutorsTab";
+
 export default {
   name: 'MainTab',
   components: {
     // eslint-disable-next-line vue/no-unused-components
-    CalendarWidget
+    CalendarWidget,
+    TasksTab,
+    TutorsTab
   },
   data: () => ({
     page:'messages',
