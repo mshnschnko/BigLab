@@ -1,19 +1,21 @@
 <template>
   <v-app>
     <v-main>
-      <MainTab/>
+      <LogRegForm/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import MainTab from './components/MainTab';
+// import RegisterForm from './components/RegisterForm';
+// import LoginForm from "@/components/LoginForm";
+import LogRegForm from "@/components/LogRegForm";
 
 export default {
   name: 'App',
 
   components: {
-    MainTab
+    LogRegForm
   },
 
   data: () => ({

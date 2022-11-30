@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'backend_app',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -50,7 +51,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:8080',
+# ]
+
 
 ROOT_URLCONF = 'backend_project.urls'
 
@@ -83,13 +93,24 @@ WSGI_APPLICATION = 'backend_project.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'API_db',
+#         'USER': 'postgres',
+#         'PASSWORD': '87878987',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432'
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'APIdb',
-        'USER': 'postgres',
-        'PASSWORD': '87878987',
-        'HOST': '127.0.0.1',
+        'NAME': 'mjcodpne',
+        'USER': 'mjcodpne',
+        'PASSWORD': 'k8w5aDoqKbnMbfFme5yqIquhspvjx3sx',
+        'HOST': 'mouse.db.elephantsql.com',
         'PORT': '5432'
     }
 }
@@ -124,6 +145,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = 'backend_app.Users'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
