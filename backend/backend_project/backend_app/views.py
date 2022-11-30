@@ -87,25 +87,58 @@ def GetAllUsers(request):
 @api_view(["GET"])
 def GetUser(request):
     object =  pattern.get("user", None)
-    userid = request.GET.get("id", -1)
-    userEmail = request.GET.get("email", "")
+    getquery = request.GET.get("query", "")
     # Users.objects.all().delete()
-    if object == None or (userid == -1 and userEmail == ""):
+    if object == None:
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
         )
     if request.method == "GET":
-        if userid != -1:
+        if getquery == "":
+            return Response(
+                data   = "Incorrect query params",
+                status = status.HTTP_404_NOT_FOUND,
+            )
+        if getquery == "profile":
+            expectedProfileType = request.GET.get("type", -1)
+            if expectedProfileType == -1:
+                return Response(
+                    data   = "Incorrect profile type",
+                    status = status.HTTP_404_NOT_FOUND,
+                )
+            object_list = object.model.objects.filter(profile_type=expectedProfileType)
+        if getquery == "id":
+            userid = request.GET.get("id", -1)
+            if userid == -1:
+                return Response(
+                    data   = "Incorrect user's id",
+                    status = status.HTTP_404_NOT_FOUND,
+                )
             object_list = object.model.objects.filter(id=userid)
-        if userEmail != "":
+        if getquery == "email":
+            userEmail = request.GET.get("email", "")
+            if userEmail == "":
+                return Response(
+                    data   = "Incorrect user's email",
+                    status = status.HTTP_404_NOT_FOUND,
+                )
             object_list = object.model.objects.filter(email=userEmail)
+        if getquery == "all":
+            object_list = object.model.objects.all()
         serializers  = object.serializers(object_list, many=True)
         if len(serializers.data) == 0:
             return Response(
                 data   = "Invalid URL",
                 status = status.HTTP_404_NOT_FOUND,
             )
+        ret_data = []
+        for user in serializers.data:
+            ret_data.append({'id': user['id'],
+                            'name': user['name'],
+                            'email': user['email'],
+                            'profile_type': user['profile_type'],
+                            'subject': user['subject']})
         # ret_data = {'id': serializers.data[0]['id'],
         #                     'name': serializers.data[0]['name'],
         #                     'email': serializers.data[0]['email'],
@@ -115,15 +148,15 @@ def GetUser(request):
         #                     'name': user['name'],
         #                     'email': user['email'],
         #                     'profile_type': user['profile_type']})
-        ret_data = {
-                'id': serializers.data[0]['id'],
-                'name': serializers.data[0]['name'],
-                'email': serializers.data[0]['email'],
-                'profile_type': serializers.data[0]['profile_type']
-                }
-        if serializers.data[0]['profile_type'] == 3:
-            ret_data['subject'] = serializers.data[0]['subject']
-        print(serializers.data[0]['profile_type'])
+        # ret_data = {
+        #         'id': serializers.data[0]['id'],
+        #         'name': serializers.data[0]['name'],
+        #         'email': serializers.data[0]['email'],
+        #         'profile_type': serializers.data[0]['profile_type']
+        #         }
+        # if serializers.data[0]['profile_type'] == 3:
+        #     ret_data['subject'] = serializers.data[0]['subject']
+        # print(serializers.data[0]['profile_type'])
         return Response(
             data = ret_data,
             # data={
