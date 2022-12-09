@@ -267,6 +267,8 @@ export default {
             this.$data.InvalidPasswordShow=false;
           })
           .catch(error => console.log(error));
+      // App.$data().ShowMainTab = true;
+      // App.$data().ShowLogReg = false;
     },
     login () {
       console.log(this.$data.email);
@@ -292,6 +294,8 @@ export default {
             console.log(error);
             this.$data.InvalidPasswordShow=true;
           });
+      // App.$data().ShowMainTab = true;
+      // App.$data().ShowLogReg = false;
     },
     resetRegister () {
       this.$refs.form1.reset()

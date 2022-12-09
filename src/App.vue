@@ -1,7 +1,8 @@
 <template>
   <v-app>
     <v-main>
-      <LogRegForm/>
+      <LogRegForm v-if="Page === 'log'"/>
+      <MainTab v-if="Page === 'main'"/>
     </v-main>
   </v-app>
 </template>
@@ -10,16 +11,20 @@
 // import RegisterForm from './components/RegisterForm';
 // import LoginForm from "@/components/LoginForm";
 import LogRegForm from "@/components/LogRegForm";
+// import TutorsTab from "@/components/TutorsTab";
+import MainTab from "@/components/MainTab";
 
 export default {
   name: 'App',
 
   components: {
-    LogRegForm
+    LogRegForm,
+    // TutorsTab,
+    MainTab,
   },
 
   data: () => ({
-    //
+    Page: 'main',
   }),
 };
 </script>

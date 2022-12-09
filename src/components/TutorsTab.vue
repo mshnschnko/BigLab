@@ -40,29 +40,27 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: "TutorsTab",
   data: () => ({
-    tutors: [
-      'Раиса',
-      'Марина',
-      'Анатолий',
-      'Даниил',
-      'Степан',
-      'Егор',
-      'Полина',
-      'Варвара',
-      'Дмитрий',
-      'Надежда',
-      'Александра',
-      'Виктория',
-      'Евгений',
-      'Кристина',
-      'Амина',
-      'Руслан',
-      'Марк'
-    ],
-  })
+    tutors: [],
+  }),
+  beforeCreate() {
+    let request = {};
+    axios.get(`http://127.0.0.1:8000/backend_app/getuser/?query=profile&type=3`, request)
+        .then(response => {
+          if (response.status === 200) {
+            let i;
+            for (i = 0; i < response.data.length; i++) {
+              this.$data.tutors.push(response.data[i].name);
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+  }
 }
 
 </script>

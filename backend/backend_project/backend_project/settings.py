@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from .secrets import MY_SECRET_KEY
+from .secrets import MY_SECRET_KEY, MY_DB
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -104,16 +104,7 @@ WSGI_APPLICATION = 'backend_project.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mjcodpne',
-        'USER': 'mjcodpne',
-        'PASSWORD': 'k8w5aDoqKbnMbfFme5yqIquhspvjx3sx',
-        'HOST': 'mouse.db.elephantsql.com',
-        'PORT': '5432'
-    }
-}
+DATABASES = MY_DB
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

@@ -4,6 +4,7 @@
         app
         color="white"
         flat
+        v-if="ShowMain"
     >
       <v-container class="fill-height">
         <v-responsive max-width="260">
@@ -28,7 +29,7 @@
         </v-avatar>
       </v-container>
     </v-app-bar>
-    <v-main class="grey lighten-3">
+    <v-main class="grey lighten-3" v-if="ShowMain">
       <v-container>
         <v-row>
           <v-col cols="2">
@@ -160,6 +161,7 @@ export default {
     TutorsTab
   },
   data: () => ({
+    ShowMain: true,
     page:'messages',
     subpage: 'none',
     dialogs: [
