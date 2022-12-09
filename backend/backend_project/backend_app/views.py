@@ -52,39 +52,6 @@ def ProfileTypesRequest(request):
         )
 
 @api_view(["GET"])
-def GetAllUsers(request):
-    object =  pattern.get("user", None)
-    # Users.objects.all().delete()
-    if object == None:
-        return Response(
-            data   = "Invalid URL",
-            status = status.HTTP_404_NOT_FOUND,
-        )
-    if request.method == "GET":
-        object_list = object.model.objects.all()
-        serializers  = object.serializers(object_list, many=True)
-        ret_data = []
-        for user in serializers.data:
-            ret_data.append({'id': user['id'],
-                            'name': user['name'],
-                            'email': user['email'],
-                            'profile_type': user['profile_type'],
-                            'subject': user['subject']})
-        return Response(
-            data = ret_data,
-            # data={
-            #     'id': serializers.data[0]['id'],
-            #     'name': serializers.data[0]['name'],
-            #     'email': serializers.data[0]['email'],
-            #     'profile_type': serializers.data[0]['profile_type']
-            #     },
-            status = status.HTTP_200_OK) if serializers.data != [] else Response(
-                                                                            data = "There is no user with this ID",
-                                                                            status=status.HTTP_404_NOT_FOUND
-                                                                        )
-        return Response(serializers.data)
-
-@api_view(["GET"])
 def GetUser(request):
     object =  pattern.get("user", None)
     getquery = request.GET.get("query", "")

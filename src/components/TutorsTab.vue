@@ -48,7 +48,7 @@ export default {
   }),
   beforeCreate() {
     let request = {};
-    axios.get(`http://127.0.0.1:8000/backend_app/getuser/?query=profile&type=3`, request)
+    axios.get(`http://127.0.0.1:8000/backend_app/user?query=profile&type=3`, request)
         .then(response => {
           if (response.status === 200) {
             let i;

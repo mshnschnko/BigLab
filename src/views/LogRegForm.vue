@@ -78,6 +78,7 @@
             @click="register"
         >
           Зарегестрироваться
+<!--          <router-link to="/home">Зарегестрироваться</router-link>-->
         </v-btn>
 
         <v-btn
@@ -121,6 +122,7 @@
             @click="login"
         >
           Войти
+<!--          <router-link to="/home">Войти</router-link>-->
         </v-btn>
 
         <v-btn
@@ -256,7 +258,7 @@ export default {
           profile_type: role,
           subject: subjid};
       }
-      axios.post("http://127.0.0.1:8000/backend_app/register/", request)
+      axios.post("http://127.0.0.1:8000/backend_app/register", request)
           .then(response => {
             console.log(response.status);
             // this.resetLogin();
@@ -265,6 +267,7 @@ export default {
             this.$data.SignedInShow=true;
             this.$data.SignedUpShow = false;
             this.$data.InvalidPasswordShow=false;
+            this.$router.push({path: '/home'});
           })
           .catch(error => console.log(error));
       // App.$data().ShowMainTab = true;
@@ -275,7 +278,7 @@ export default {
       console.log(this.$data.password);
       this.$refs.form2.validate();
       const request = {};
-      axios.get(`http://127.0.0.1:8000/backend_app/checkuser/?email=${this.$data.email}&password=${this.$data.password}`, request)
+      axios.get(`http://127.0.0.1:8000/backend_app/checkuser?email=${this.$data.email}&password=${this.$data.password}`, request)
           .then(response => {
             if (response.status === 200) {
               console.log(response.status);
@@ -285,6 +288,7 @@ export default {
               this.$data.SignedInShow = false;
               this.$data.SignedUpShow = true;
               this.$data.InvalidPasswordShow = false;
+              this.$router.push({path: '/home'});
             }
             else{
               this.$data.InvalidPasswordShow=true;

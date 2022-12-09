@@ -1,30 +1,32 @@
 <template>
-  <v-app>
-    <v-main>
-      <LogRegForm v-if="Page === 'log'"/>
-      <MainTab v-if="Page === 'main'"/>
-    </v-main>
-  </v-app>
+  <div id="app">
+    <nav>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link> |
+      <router-link to="/login">Login</router-link>
+    </nav>
+    <router-view/>
+  </div>
 </template>
 
-<script>
-// import RegisterForm from './components/RegisterForm';
-// import LoginForm from "@/components/LoginForm";
-import LogRegForm from "@/components/LogRegForm";
-// import TutorsTab from "@/components/TutorsTab";
-import MainTab from "@/components/MainTab";
+<style lang="scss">
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+}
 
-export default {
-  name: 'App',
+nav {
+  padding: 30px;
 
-  components: {
-    LogRegForm,
-    // TutorsTab,
-    MainTab,
-  },
+  a {
+    font-weight: bold;
+    color: #2c3e50;
 
-  data: () => ({
-    Page: 'main',
-  }),
-};
-</script>
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+</style>

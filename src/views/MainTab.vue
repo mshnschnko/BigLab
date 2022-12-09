@@ -4,7 +4,6 @@
         app
         color="white"
         flat
-        v-if="ShowMain"
     >
       <v-container class="fill-height">
         <v-responsive max-width="260">
@@ -27,9 +26,16 @@
         >
           <v-icon>mdi-account-circle</v-icon>
         </v-avatar>
+        <v-btn
+          icon
+        >
+          <router-link to="/login">
+            <v-icon> mdi-logout </v-icon>
+          </router-link>
+        </v-btn>
       </v-container>
     </v-app-bar>
-    <v-main class="grey lighten-3" v-if="ShowMain">
+    <v-main class="grey lighten-3">
       <v-container>
         <v-row>
           <v-col cols="2">
@@ -161,7 +167,6 @@ export default {
     TutorsTab
   },
   data: () => ({
-    ShowMain: true,
     page:'messages',
     subpage: 'none',
     dialogs: [
