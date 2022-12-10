@@ -24,7 +24,7 @@ def ProfileTypesRequest(request):
     typeid = request.GET.get("typeid", -1)
     object =  pattern.get("profiletype", None)
     # Users.objects.all().delete()
-    if object == None:
+    if object is None:
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
@@ -56,7 +56,7 @@ def GetUser(request):
     object =  pattern.get("user", None)
     getquery = request.GET.get("query", "")
     # Users.objects.all().delete()
-    if object == None:
+    if object is None:
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
@@ -144,7 +144,7 @@ def CheckUser(request):
     userEmail = request.GET.get("email", "")
     userPassword = request.GET.get("password", "")
     # Users.objects.all().delete()
-    if object == None or ((userid == -1 or userEmail == "") and userPassword == ""):
+    if object is None or ((userid == -1 or userEmail == "") and userPassword == ""):
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
@@ -195,7 +195,7 @@ def CheckUser(request):
 def CreateUser(request):
     object =  pattern.get("user", None)
     # Users.objects.all().delete()
-    if object == None:
+    if object is None:
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
@@ -206,9 +206,10 @@ def CreateUser(request):
         serializers = object.serializers(data=data)
         
         if not serializers.is_valid(raise_exception=True):
+            print("already")
             return Response(
                 data   = "Users with this email already exists",
-                status = status.HTTP_404_NOT_FOUND
+                status = status.HTTP_409_CONFLICT
             )
         serializers.save()
         return Response(
@@ -221,7 +222,7 @@ def Tasks(request):
     object =  pattern.get("task", None)
     taskid = request.GET.get("taskid", -1)
     # Users.objects.all().delete()
-    if object == None:
+    if object is None:
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
@@ -254,7 +255,7 @@ def SubjectsRequest(request):
     subj = request.GET.get("subjid", "")
     object =  pattern.get("subject", None)
     # Users.objects.all().delete()
-    if object == None:
+    if object is None:
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
@@ -290,7 +291,7 @@ def StudentTeacherRequest(request):
     tutorid = request.GET.get("tutorid", -1)
     object =  pattern.get("studentteacher", None)
     # Users.objects.all().delete()
-    if object == None:
+    if object is None:
         return Response(
             data   = "Invalid URL",
             status = status.HTTP_404_NOT_FOUND,
