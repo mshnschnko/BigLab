@@ -1,83 +1,80 @@
 <template>
   <div>
-    <v-sheet
-        min-height="85vh"
-        max-height="85vh"
-        class="overflow-y-auto rounded-lg">
-<!--      <v-toolbar-->
-<!--          flat-->
-<!--          class="rounded-lg rounded-b-0"-->
-<!--      >-->
-<!--        <v-tabs>-->
-<!--          <v-tab class="ma-2"-->
-<!--                 text-->
-<!--          >Математика-->
-<!--          </v-tab>-->
-<!--          <v-tab class="ma-2"-->
-<!--                 text-->
-<!--          >Физика-->
-<!--          </v-tab>-->
-<!--        </v-tabs>-->
-<!--      </v-toolbar>-->
-
-<!--      <v-divider></v-divider>-->
-
-      <v-sheet>
-        <v-banner
-            v-if="tutors.length === 0"
-            class="align-self-center align-content-center justify-lg-center"
+    <v-row>
+      <v-col cols="3">
+        <v-sheet
+            class="overflow-y-auto rounded-l-lg"
+            min-height="85vh"
+            max-height="85vh"
         >
-          Нет активных договоров
-        </v-banner>
-        <v-list
-            class="rounded-lg rounded-t-0"
-            v-for="tutor in tutors"
-            :key="tutor"
-        >
-          <v-list-item
-              link
-              @click="$router.push({path: `/profile/${tutor.id}`})"
+          <v-list
+              class="rounded-l-lg"
+              v-for="tutor in tutors"
+              :key="tutor"
           >
-            <v-avatar
-                class="mr-2"
-                color="grey darken-1"
-                size="32">
-              <v-icon>mdi-account-circle</v-icon>
-            </v-avatar>
-            <v-list-item-content>
-              <v-list-item-title>{{ tutor.name }}</v-list-item-title>
-              <v-list-item-subtitle>{{ subjects[tutor.subject-1] }}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-divider/>
-        </v-list>
-      </v-sheet>
-    </v-sheet>
+            <v-list-item
+                link
+                class="v-list-item--two-line"
+                @click="subpage=tutor.name"
+            >
+              <v-avatar color="grey darken-1" size="32">
+                <v-icon>mdi-account-circle</v-icon>
+              </v-avatar>
+              <v-list-item-content class="ml-3">
+                <v-list-item-title>
+                  {{ tutor.name }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  Some Text...
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider class="text-grey-lighten-1"></v-divider>
+          </v-list>
+          <!--  -->
+        </v-sheet>
+      </v-col>
+      <v-col cols="9">
+        <v-sheet
+            min-height="85vh"
+            max-height="85vh"
+            class="rounded-r-lg overflow-y-auto"
+        >
+          <v-divider style="position: relative; top: 78vh" v-if="subpage!=='none'"></v-divider>
+          <v-container style="position: relative; padding-top: 78.5vh" v-if="subpage!=='none'">
+            <v-responsive width="85vh" style="position: absolute; left: 5px">
+              <v-text-field
+                  dense
+                  flat
+                  hide-details
+                  solo-inverted
+                  class="rounded-lg"
+              ></v-text-field>
+            </v-responsive>
+            <v-icon
+                large
+                style="position: absolute; right: 10px"
+                @click=";"
+            >
+              mdi-send
+            </v-icon>
+          </v-container>
+        </v-sheet>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+
 export default {
-  name: "TutorsTab",
+  name: "MessagesTab",
   data: () => ({
     tutors: [],
     subjects: [],
+    subpage: 'none',
   }),
-  // beforeCreate() {
-  //   axios.get(`http://127.0.0.1:8000/backend_app/subject`)
-  //       .then(response => {
-  //         if (response.status === 200) {
-  //           let i;
-  //           for (i = 0; i < response.data.length; i++) {
-  //             this.$data.subjects.push(response.data[i].subject);
-  //           }
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //       })
-  // },
   mounted() {
     axios.get(`http://127.0.0.1:8000/backend_app/subject`)
         .then(response => {
@@ -142,7 +139,6 @@ export default {
     }
   }
 }
-
 </script>
 
 <style scoped>

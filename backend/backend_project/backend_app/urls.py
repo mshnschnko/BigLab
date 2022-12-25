@@ -1,11 +1,11 @@
 from django.urls import re_path, path
-from .views import CreateUser, GetUser, ProfileTypesRequest, Tasks, CheckUser, SubjectsRequest, StudentTeacherRequest
+from .views import CreateUser, GetUser, ProfileTypesRequest, Task, CheckUser, SubjectsRequest, StudentTeacherRequest
 
 urlpatterns = [
   # path('getallusers/', GetAllUsers),
   path('register', CreateUser),
   path('profiletypes', ProfileTypesRequest),
-  path('task', Tasks),
+  path('task', Task),
   path('user', GetUser),
   path('checkuser', CheckUser),
   path('subject', SubjectsRequest),

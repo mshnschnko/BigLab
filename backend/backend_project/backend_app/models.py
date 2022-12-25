@@ -65,7 +65,7 @@ class Tasks(models.Model):
     task_status = models.CharField(max_length = 10)
     task_comment = models.TextField()
     publication_time = models.DateTimeField()
-    completion_time = models.DateTimeField()
+    completion_time = models.DateTimeField(blank=True, null=True, default=None)
     deadline = models.DateTimeField()
 
 class StudentTeacher(models.Model):

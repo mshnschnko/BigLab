@@ -141,6 +141,9 @@
       <v-card-text v-if="UserAlreadyExists === true" style="color: red">
         Пользователь с таким e-mail уже существует
       </v-card-text>
+      <v-card-text v-if="UnknownError === true" style="color: red">
+        Неизвестная ошибка
+      </v-card-text>
     </v-container>
   </v-app>
 </template>
@@ -152,6 +155,7 @@ export default {
   data: () => ({
     activePage: 'register',
     UserAlreadyExists: false,
+    UnknownError: false,
     RegisterShow: true,
     LoginShow: false,
     SignedUpShow: false,
@@ -203,6 +207,11 @@ export default {
     ],
     checkbox: false,
   }),
+  mounted() {
+    if (localStorage.userid && localStorage.profile_type) {
+      this.$router.push({path: '/home'});
+    }
+  },
   methods: {
     register () {
       this.$refs.regform.validate();
@@ -251,14 +260,14 @@ export default {
       let request = {username: this.$data.email.slice(0, this.$data.email.indexOf("@")),
         name: this.$data.name,
         email: this.$data.email,
-        raw_password: this.$data.password,
+        // raw_password: this.$data.password,
         password: this.$data.password,
         profile_type: role};
       if (role === "3") {
         request = {username: this.$data.email.slice(0, this.$data.email.indexOf("@")),
           name: this.$data.name,
           email: this.$data.email,
-          raw_password: this.$data.password,
+          // raw_password: this.$data.password,
           password: this.$data.password,
           profile_type: role,
           subject: subjid};
@@ -275,17 +284,23 @@ export default {
               // this.$data.SignedUpShow = false;
               this.$data.InvalidPasswordShow=false;
               this.$data.UserAlreadyExists=false;
+              localStorage.userid = response.data.id;
+              localStorage.profile_type = response.data.profile_type;
               this.$router.push({path: '/home'});
             }
             else {
               this.$data.InvalidPasswordShow=false;
-              this.$data.UserAlreadyExists=true;
+              this.$data.UnknownError=false;
+              console.log(response.data.email);
             }
           })
           .catch(error => {
             console.log(error);
             this.$data.InvalidPasswordShow=false;
-            this.$data.UserAlreadyExists=true;
+            if (error.response.data.email[0] === "This email has already been registered") {
+              this.$data.UserAlreadyExists=true;
+            }
+            console.log("CATCH");
           });
       // App.$data().ShowMainTab = true;
       // App.$data().ShowLogReg = false;
@@ -307,6 +322,8 @@ export default {
               // this.$data.SignedUpShow = true;
               this.$data.InvalidPasswordShow = false;
               this.$data.UserAlreadyExists=false;
+              localStorage.userid = response.data.id;
+              localStorage.profile_type = response.data.profile_type;
               this.$router.push({path: '/home'});
             }
             else{

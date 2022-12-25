@@ -212,14 +212,20 @@ def CreateUser(request):
                 status = status.HTTP_409_CONFLICT
             )
         serializers.save()
+        object_list = object.model.objects.filter(email=request.data['email'])
+        serializers1  = object.serializers(object_list, many=True)
         return Response(
-                #data   = serializers.error,
+                data   = {'id': serializers1.data[0]['id'],
+                            'name': serializers1.data[0]['name'],
+                            'email': serializers1.data[0]['email'],
+                            'profile_type': serializers1.data[0]['profile_type']},
                 status = status.HTTP_201_CREATED
         )
 
 @api_view(["GET", "POST"])
-def Tasks(request):
+def Task(request):
     object =  pattern.get("task", None)
+    queryparam = request.GET.get("query", "")
     taskid = request.GET.get("taskid", -1)
     # Users.objects.all().delete()
     if object is None:
@@ -228,14 +234,44 @@ def Tasks(request):
             status = status.HTTP_404_NOT_FOUND,
         )
     if request.method == "GET":
-        object_list = object.model.objects.filter(id=taskid) if taskid != -1 else object.model.objects.all()
+        if queryparam == "":
+            return Response(
+                data   = "Incorrect query params",
+                status = status.HTTP_404_NOT_FOUND,
+            )
+        if queryparam == "all":
+            object_list = object.model.objects.all()
+        if queryparam == "byuserid":
+            userid = request.GET.get("id", -1)
+            if userid == -1:
+                return Response(
+                data   = "Incorrect user id",
+                status = status.HTTP_404_NOT_FOUND,
+            )
+            relations = StudentTeacher.objects.filter(student_id = userid) | StudentTeacher.objects.filter(teacher_id = userid)
+            serializers2 = pattern.get("studentteacher", None).serializers(relations, many=True)
+            relationsids = []
+            for item in serializers2.data:
+                relationsids.append(item['id'])
+            object_list = object.model.objects.filter(relation_id__in = relationsids)
+        if queryparam == "bytaskid":
+            taskid = request.GET.get("id", -1)
+            if taskid == -1:
+                return Response(
+                data   = "Incorrect task id",
+                status = status.HTTP_404_NOT_FOUND,
+            )
+            object_list = object.model.objects.filter(id = taskid)
         serializers  = object.serializers(object_list, many=True)
         print(serializers.data)
-        return Response(serializers.data) if serializers.data != [] else Response(data = "There is no task with this ID", status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            data=serializers.data,
+            status=status.HTTP_200_OK
+        )
 
     if request.method == "POST":
         data = request.data
-        print(data)
+        #print(data)
         serializers = object.serializers(data=data)
         
         if not serializers.is_valid():

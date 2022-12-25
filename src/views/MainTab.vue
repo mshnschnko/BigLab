@@ -19,19 +19,19 @@
 
         <v-spacer></v-spacer>
 
-        <v-avatar
-            class="mr-10"
-            color="grey darken-1"
-            size="32"
-        >
-          <v-icon>mdi-account-circle</v-icon>
-        </v-avatar>
+        <v-btn icon @click="$router.push({path: `/profile/${userid}`});">
+          <v-avatar
+              color="grey darken-1"
+              size="32"
+          >
+            <v-icon>mdi-account-circle</v-icon>
+          </v-avatar>
+        </v-btn>
         <v-btn
           icon
+          @click="logout"
         >
-          <router-link to="/login">
             <v-icon> mdi-logout </v-icon>
-          </router-link>
         </v-btn>
       </v-container>
     </v-app-bar>
@@ -53,42 +53,25 @@
                     </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
+                <v-list-item
+                    v-if="profile_type === '3' || profile_type === '2'"
+                    @click="page='Преподаватели'; subpage='none'"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-if="profile_type === '3'">
+                      Ученики
+                    </v-list-item-title>
+                    <v-list-item-title v-if="profile_type === '2'">
+                      Преподаватели
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
               </v-list>
             </v-sheet>
           </v-col>
 
-          <v-col cols="2" v-if="page==='Сообщения'">
-            <v-sheet
-                class="overflow-y-auto rounded-l-lg"
-                min-height="80vh"
-                max-height="80vh"
-            >
-                <v-list
-                    class="rounded-l-lg"
-                    v-for="dialog in dialogs"
-                    :key="dialog"
-                >
-                  <v-list-item
-                      link
-                      class="v-list-item--two-line"
-                      @click="subpage=dialog"
-                  >
-                    <v-avatar color="grey darken-1" size="32">
-                      <v-icon>{{dialog[0]}}</v-icon>
-                    </v-avatar>
-                    <v-list-item-content class="ml-3">
-                      <v-list-item-title>
-                        {{ dialog }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        Some Text...
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-divider class="text-grey-lighten-1"></v-divider>
-                </v-list>
-              <!--  -->
-            </v-sheet>
+          <v-col v-if="page==='Сообщения'">
+            <MessagesTab/>
           </v-col>
           <v-col cols="10" v-if="page==='Задания'">
             <TasksTab/>
@@ -126,27 +109,6 @@
           <v-col cols="10" v-if="page==='Расписание'">
             <CalendarWidget/>
           </v-col>
-          <v-col cols="8" v-if="page==='Сообщения'">
-            <v-sheet
-                min-height="80vh"
-                max-height="80vh"
-                class="rounded-r-lg overflow-y-auto"
-            >
-              <v-divider style="position: relative; top: 73vh" v-if="subpage!=='none'"></v-divider>
-              <v-container style="position: relative; padding-top: 73.5vh" v-if="subpage!=='none'">
-                <v-responsive width="90vh" style="position: absolute; left: 5px">
-                  <v-text-field
-                      dense
-                      flat
-                      hide-details
-                      solo-inverted
-                      class="rounded-lg"
-                  ></v-text-field>
-                </v-responsive>
-                <v-icon large style="position: absolute; right: 10px">mdi-send</v-icon>
-              </v-container>
-            </v-sheet>
-          </v-col>
         </v-row>
       </v-container>
     </v-main>
@@ -157,6 +119,7 @@
 import CalendarWidget from "@/components/CalendarWidget";
 import TasksTab from "@/components/TasksTab";
 import TutorsTab from "@/components/TutorsTab";
+import MessagesTab from "@/components/MessagesTab";
 
 export default {
   name: 'MainTab',
@@ -164,11 +127,14 @@ export default {
     // eslint-disable-next-line vue/no-unused-components
     CalendarWidget,
     TasksTab,
-    TutorsTab
+    TutorsTab,
+    MessagesTab
   },
   data: () => ({
-    page:'messages',
+    page:'Сообщения',
     subpage: 'none',
+    profile_type: '',
+    userid: -1,
     dialogs: [
       'Раиса',
       'Марина',
@@ -191,7 +157,7 @@ export default {
     links: [
       'Сообщения',
       'Задания',
-      'Преподаватели',
+      // 'Преподаватели',
       'Тесты',
       'Расписание'
     ],
@@ -207,5 +173,16 @@ export default {
       'Английский Язык'
     ]
   }),
+  mounted() {
+    this.$data.profile_type = localStorage.profile_type;
+    this.$data.userid = localStorage.userid;
+  },
+  methods: {
+    logout () {
+      localStorage.removeItem('userid');
+      localStorage.removeItem('profile_type');
+      this.$router.push({path: '/login'});
+    }
+  }
 }
 </script>

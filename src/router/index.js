@@ -26,6 +26,12 @@ const routes = [
     path: '/home',
     name: 'home',
     component: () => import('../views/MainTab')
+  },
+  {
+    path: '/profile/:id',
+    name: 'profile',
+    component: () => import('../views/ProfileView'),
+    props: true
   }
 ]
 
