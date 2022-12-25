@@ -158,7 +158,7 @@ export default {
       'Сообщения',
       'Задания',
       // 'Преподаватели',
-      'Тесты',
+      // 'Тесты',
       'Расписание'
     ],
     items: [
@@ -173,7 +173,7 @@ export default {
       'Английский Язык'
     ]
   }),
-  mounted() {
+  created() {
     this.$data.profile_type = localStorage.profile_type;
     this.$data.userid = localStorage.userid;
   },

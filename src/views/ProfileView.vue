@@ -39,9 +39,25 @@
       </v-container>
     </v-app-bar>
     <v-main class="grey lighten-3">
-      <v-banner>
-        {{ user.name }}
-      </v-banner>
+      <v-container>
+        <v-col cols="12">
+          <v-sheet min-height="85vh"
+                   max-height="85vh"
+                   class="overflow-y-auto rounded-lg">
+            <v-row  class="align-content-center">
+              <v-avatar
+                  color="grey darken-1"
+                  size="128"
+              >
+                <v-icon size="128">mdi-account-circle</v-icon>
+              </v-avatar>
+            </v-row>
+          </v-sheet>
+        </v-col>
+      </v-container>
+<!--      <v-banner>-->
+<!--        {{ user.name }}-->
+<!--      </v-banner>-->
     </v-main>
   </v-app>
 </template>
@@ -54,7 +70,7 @@ export default {
   data: () => ({
     user: {},
   }),
-  mounted() {
+  created() {
     axios.get(`http://127.0.0.1:8000/backend_app/user?query=id&id=${this.$props.id}`)
         .then(response => {
           if (response.status === 200) {

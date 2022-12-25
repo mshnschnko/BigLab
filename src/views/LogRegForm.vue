@@ -207,7 +207,7 @@ export default {
     ],
     checkbox: false,
   }),
-  mounted() {
+  created() {
     if (localStorage.userid && localStorage.profile_type) {
       this.$router.push({path: '/home'});
     }

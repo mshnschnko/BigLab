@@ -222,11 +222,10 @@ def CreateUser(request):
                 status = status.HTTP_201_CREATED
         )
 
-@api_view(["GET", "POST"])
+@api_view(["GET", "POST", "PATCH"])
 def Task(request):
     object =  pattern.get("task", None)
     queryparam = request.GET.get("query", "")
-    taskid = request.GET.get("taskid", -1)
     # Users.objects.all().delete()
     if object is None:
         return Response(
@@ -283,6 +282,13 @@ def Task(request):
         return Response(
                 #data   = serializers.error,
                 status = status.HTTP_201_CREATED
+        )
+
+    if request.method == "PATCH":
+        data = request.data
+        res = object.model.objects.filter(id = data['id']).update(task_status = data['new_status'], completion_time = data['completion_time'])
+        return Response(
+            status=status.HTTP_202_ACCEPTED
         )
 
 @api_view(["GET", "POST"])
@@ -342,7 +348,7 @@ def StudentTeacherRequest(request):
         else:
             object_list = object.model.objects.filter(student_id=studid) & object.model.objects.filter(teacher_id=tutorid)
         serializers  = object.serializers(object_list, many=True)
-        print(serializers.data)
+        # print(serializers.data)
         return Response(serializers.data)
 
     if request.method == "POST":

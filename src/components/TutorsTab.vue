@@ -78,7 +78,7 @@ export default {
   //         console.log(error);
   //       })
   // },
-  mounted() {
+  created() {
     axios.get(`http://127.0.0.1:8000/backend_app/subject`)
         .then(response => {
           console.log(response.data);
