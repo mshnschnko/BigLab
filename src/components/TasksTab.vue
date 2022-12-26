@@ -1,182 +1,227 @@
 <template>
-  <v-app id="inspire">
-    <v-app-bar
-        app
-        color="white"
-        flat
-    >
-      <v-container class="py-0 fill-height">
-        <v-responsive max-width="260">
-          <v-text-field
-              dense
-              flat
-              hide-details
-              rounded
-              solo-inverted
-              placeholder="Поиск"
-          ></v-text-field>
-        </v-responsive>
-
-        <v-spacer></v-spacer>
-
-        <v-btn class="ma-2"
-               text
-        >Профиль
-        </v-btn>
-
-        <v-avatar
-            class="mr-10"
-            color="grey darken-1"
-            size="32"
+  <div>
+    <v-sheet class="rounded-lg" v-if="subpage === 'Tasks'">
+      <v-toolbar
+          flat
+          class="rounded-lg rounded-b-0"
+      >
+        <v-tabs>
+          <v-tab class="ma-2"
+                 text
+                 @click="sections = 'Назначено'"
+          >Назначено
+          </v-tab>
+          <v-tab class="ma-2"
+                 text
+                 @click="sections = 'Выполнено'"
+          >Выполнено
+          </v-tab>
+<!--          <v-col cols="3">-->
+<!--            <v-select-->
+<!--                clearable-->
+<!--                :items="teachers"-->
+<!--                label="Репетиторы"-->
+<!--            ></v-select>-->
+<!--          </v-col>-->
+        </v-tabs>
+        <v-btn
+            v-if="profile_type === '3'"
+            class="mr-0"
+            @click="subpage = 'Create Task'"
         >
-          <v-icon icon="mdi-account-circle"></v-icon>
-        </v-avatar>
+          Создать
+        </v-btn>
+      </v-toolbar>
 
-      </v-container>
-    </v-app-bar>
+      <v-divider></v-divider>
 
-    <v-main class="grey lighten-3">
-      <v-container>
-        <v-row>
-          <v-col cols="2">
-            <v-sheet rounded="lg">
-              <v-list color="transparent">
-                <!--                <v-list-item-->
-                <!--                    v-for="section in sections"-->
-                <!--                    :key="section"-->
-                <!--                    link-->
-                <!--                >-->
-                <!--                  <v-list-item-content>-->
-                <!--                    <v-list-item-title>-->
-                <!--                      {{ section }}-->
-                <!--                    </v-list-item-title>-->
-                <!--                  </v-list-item-content>-->
-                <!--                </v-list-item>-->
+      <v-sheet
+          v-if="sections === 'Назначено'"
+          min-height="85vh"
+          max-height="85vh"
+          class="overflow-y-auto rounded-lg rounded-t-0"
+      >
+        <v-col
+            v-for="card in cards"
+            :key="card"
+            cols="12"
+        >
+          <v-card>
+            <v-subheader>{{ card }}</v-subheader>
 
-                <v-list-item-group v-model="model">
-                  <v-list-item
-                      v-for="(item, i) in items"
-                      :key="i"
-                  >
-                    <v-list-item-icon>
-                      <v-icon v-text="item.icon"></v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title v-text="item.text"></v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-
-                <v-divider class="my-2"></v-divider>
-
+            <v-list two-line>
+              <template v-for="task in assigned_tasks">
                 <v-list-item
-                    link
-                    color="grey lighten-4"
+                    :key="task"
                 >
+                  <v-list-item-avatar color="grey darken-1">
+                  </v-list-item-avatar>
+
                   <v-list-item-content>
                     <v-list-item-title>
-                      Refresh
+                      {{task.link_to_task}}
                     </v-list-item-title>
+
+                    <v-list-item-subtitle>
+<!--                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil repellendus distinctio-->
+<!--                      similique-->
+                      {{ task.task_comment }}
+                    </v-list-item-subtitle>
+                    <v-btn
+                        max-width="10vh"
+                        min-width="10vh"
+                        v-if="profile_type === '3'"
+                        class="mr-0"
+                        @click="acceptTask(task.id)"
+                    >Зачесть</v-btn>
                   </v-list-item-content>
                 </v-list-item>
-              </v-list>
-            </v-sheet>
-          </v-col>
 
-          <v-col>
-            <v-toolbar
-                flat
-                class="rounded-lg rounded-b-0"
-            >
-              <v-tabs>
-                <v-tab class="ma-2"
-                       text
-                >Назначено
-                </v-tab>
-                <v-tab class="ma-2"
-                       text
-                >Выполнено
-                </v-tab>
-                <!--                <v-menu transition="slide-y-transition">-->
-                <!--                  <template v-slot:activator="{ on, attrs }">-->
-                <!--                    <v-btn-->
-                <!--                        text-->
-                <!--                        color="grey"-->
-                <!--                        class="mt-3"-->
-                <!--                        v-bind="attrs"-->
-                <!--                        v-on="on"-->
-                <!--                    >-->
-                <!--                      Репетиторы-->
-                <!--                    </v-btn>-->
-                <!--                  </template>-->
-                <v-col cols="3">
-                  <v-select
-                      clearable
-                      :items="teachers"
-                      label="Репетиторы"
-                  ></v-select>
-                    <!--                </v-menu>-->
-                </v-col>
-              </v-tabs>
-            </v-toolbar>
+                <v-divider
+                    v-if="task !== assigned_tasks[assigned_tasks.length-1]"
+                    :key="task"
+                    inset
+                ></v-divider>
+              </template>
+            </v-list>
+          </v-card>
+        </v-col>
+      </v-sheet>
 
-            <v-divider></v-divider>
+      <v-sheet
+          v-if="sections === 'Выполнено'"
+          min-height="85vh"
+          max-height="85vh"
+          class="overflow-y-auto rounded-lg rounded-t-0"
+      >
+        <v-col
+            cols="12"
+        >
+          <v-card>
+<!--            <v-subheader>{{ card }}</v-subheader>-->
 
-            <v-sheet
-                min-height="70vh"
-                class="rounded-lg rounded-t-0"
-            >
-              <v-col
-                  v-for="card in cards"
-                  :key="card"
-                  cols="12"
-              >
-                <v-card>
-                  <v-subheader>{{ card }}</v-subheader>
+            <v-list two-line>
+              <template v-for="task in completed_tasks">
+                <v-list-item
+                    :key="task"
+                >
+                  <v-list-item-avatar color="grey darken-1">
+                  </v-list-item-avatar>
 
-                  <v-list two-line>
-                    <template v-for="n in 6">
-                      <v-list-item
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{task.link_to_task}}
+                    </v-list-item-title>
 
-                          :key="n"
-                      >
-                        <v-list-item-avatar color="grey darken-1">
-                        </v-list-item-avatar>
+                    <v-list-item-subtitle>
+                      <!--                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil repellendus distinctio-->
+                      <!--                      similique-->
+                      {{ task.task_comment }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
 
-                        <v-list-item-content>
-                          <v-list-item-title>Задание {{ n }}</v-list-item-title>
+                <v-divider
+                    v-if="task !== completed_tasks[completed_tasks.length-1]"
+                    :key="task"
+                    inset
+                ></v-divider>
+              </template>
+            </v-list>
+          </v-card>
+        </v-col>
+      </v-sheet>
+    </v-sheet>
+    <v-sheet v-if="subpage === 'Create Task'">
+      <v-toolbar
+          flat
+          class="rounded-lg rounded-b-0"
+      >
+        <v-btn
+            class="mr-0"
+            @click="subpage = 'Tasks'"
+        >
+          Назад
+        </v-btn>
+      </v-toolbar>
 
-                          <v-list-item-subtitle>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil repellendus distinctio similique
-                          </v-list-item-subtitle>
-                        </v-list-item-content>
-                      </v-list-item>
+      <v-container>
+        <v-text-field
+            v-model="description"
+            label="Описание"
+        >
+        </v-text-field>
 
-                      <v-divider
-                          v-if="n !== 6"
-                          :key="`divider-${n}`"
-                          inset
-                      ></v-divider>
-                    </template>
-                  </v-list>
-                </v-card>
-              </v-col>
-            </v-sheet>
-          </v-col>
-        </v-row>
+        <v-text-field
+            v-model="tasklink"
+            label="Ссылка на задание"
+            required>
+        </v-text-field>
+        <v-select
+            v-model="choosenStudent"
+            :items="students"
+            item-text="name"
+            item-value="id"
+            :rules="[v => !!v || 'Необходимо выбрать получателя']"
+            label="Студент"
+            required
+        >
+        </v-select>
+        <v-menu
+            v-model="menu2"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+                v-model="date"
+                label="Крайний срок сдачи"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+              v-model="date"
+              @input="menu2 = false"
+          ></v-date-picker>
+        </v-menu>
+        <v-btn
+          class="mr-0"
+          @click="CreateTask"
+        >
+          Отправить
+        </v-btn>
       </v-container>
-    </v-main>
-  </v-app>
+    </v-sheet>
+  </div>
 </template>
 
 <script>
+// import axios from "axios";
+import axios from "axios";
+
 export default {
   data: () => ({
+    profile_type: '',
+    subpage: 'Tasks',
     cards: ['Today', 'Yesterday'],
     drawer: null,
-    sections: [
-      'Задания'
-    ],
+    sections: "Назначено",
+    choosenStudent: 0,
+    relationid: '',
+    tasklink: '',
+    description: '',
+    mainsheet: 0,
+    date: '',
+    menu2: false,
+    students: [],
+      // ids:[],
+      // names:[],
     items: [
       {
         icon: 'mdi-pencil',
@@ -187,10 +232,8 @@ export default {
       'Victor Igorevich',
       'Vyacheslav Sergeevich'
     ],
-    tasks: [
-        'Математика',
-        'Физика',
-    ],
+    completed_tasks: [],
+    assigned_tasks: [],
     // teachers: [
     //   {
     //     name: 'Victor Igorevich',
@@ -202,6 +245,95 @@ export default {
     model: 1,
     variant: "default"
   }),
+  methods: {
+    acceptTask(taskid) {
+      let request = {
+        id: taskid,
+        new_status: "completed",
+        completion_time: new Date().toISOString().split('.')[0]+"Z"
+      };
+      axios.patch(`http://127.0.0.1:8000/backend_app/task`, request)
+      this.mainsheet += 1;
+      window.location.reload();
+
+    },
+    printdd() {
+      console.log(this.$data.choosenStudent, this.$data.date + 'T23:59:00Z', new Date().toISOString().split('.')[0]+"Z");
+    },
+    CreateTask() {
+      axios.get(`http://127.0.0.1:8000/backend_app/pairs?tutorid=${localStorage.userid}&studid=${this.$data.choosenStudent.toString()}`)
+          .then(response => {
+            if (response.status === 200) {
+              this.$data.relationid = response.data[0].id;
+            }
+          })
+          .catch(error => {
+            console.log("CAAATCH");
+            console.log(error);
+          })
+      let request = {relation_id: this.$data.relationid.toString(),
+        link_to_task: this.$data.tasklink,
+        task_status: "assigned",
+        task_comment: this.$data.description,
+        publication_time: new Date().toISOString().split('.')[0]+"Z",
+        deadline: this.$data.date + 'T23:59:00Z'};
+      axios.post(`http://127.0.0.1:8000/backend_app/task`, request)
+          .then(response => {
+            if (response.status === 201) {
+              this.$data.subpage = 'Tasks';
+              console.log(response.status);
+              window.location.reload();
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          })
+    }
+  },
+  created() {
+    this.$data.profile_type = localStorage.profile_type;
+    axios.get(`http://127.0.0.1:8000/backend_app/task?query=byuserid&id=${localStorage.userid}`)
+        .then(response => {
+          if (response.status === 200) {
+            let i;
+            for (i = 0; i < response.data.length; i++) {
+              console.log(response.data[i]['completion_time']);
+              if (response.data[i]['completion_time'] === null) {
+                this.$data.assigned_tasks.push(response.data[i]);
+              }
+              else {
+                this.$data.completed_tasks.push(response.data[i]);
+              }
+            }
+            console.log(this.$data.assigned_tasks);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    axios.get(`http://127.0.0.1:8000/backend_app/pairs?tutorid=${localStorage.userid}`)
+        .then(response => {
+          if (response.status === 200) {
+            let i;
+            for (i = 0; i < response.data.length; i++) {
+              axios.get(`http://127.0.0.1:8000/backend_app/user?query=id&id=${response.data[i].student_id}`)
+                  .then(response => {
+                    if (response.status === 200) {
+                      // this.$data.students.ids.push(response.data[0].id);
+                      // this.$data.students.names.push(response.data[0].name);
+                      this.$data.students.push(response.data[0]);
+                    }
+                  })
+                  .catch(error => {
+                    console.log(error);
+                  })
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+  }
 }
 </script>
 

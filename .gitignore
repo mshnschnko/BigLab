@@ -6,8 +6,8 @@ node_modules
 # local env files
 .env.local
 .env.*.local
-backend/.venv/*
-backend/backend_project/backend_project/secrets.py
+*/.venv/*
+*secrets.py
 *__pycache__*
 
 # Log files

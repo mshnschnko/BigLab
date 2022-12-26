@@ -8,10 +8,10 @@
     >
       <v-container class="fill-height">
         <v-spacer></v-spacer>
-        <v-btn class="mr-0" @click="RegisterShow=true; LoginShow=false; SignedUpShow=false; SignedInShow=false; InvalidPasswordShow=false;" text>
+        <v-btn class="mr-0" @click="activePage = 'register'; InvalidPasswordShow = false; UserAlreadyExists = false" text>
           Регистрация
         </v-btn>
-        <v-btn class="mr-0" @click="RegisterShow=false; LoginShow=true; SignedUpShow=false; SignedInShow=false; InvalidPasswordShow=false;" text>
+        <v-btn class="mr-0" @click="activePage = 'login'; InvalidPasswordShow = false; UserAlreadyExists = false" text>
           Вход
         </v-btn>
       </v-container>
@@ -19,8 +19,8 @@
 
     <v-container class="align-content-center">
       <v-form
-          v-if="RegisterShow"
-          ref="form1"
+          v-if="activePage === 'register'"
+          ref="regform"
           v-model="validReg"
           lazy-validation
       >
@@ -78,6 +78,7 @@
             @click="register"
         >
           Зарегестрироваться
+<!--          <router-link to="/home">Зарегестрироваться</router-link>-->
         </v-btn>
 
         <v-btn
@@ -93,8 +94,8 @@
 
     <v-container class="align-content-center">
       <v-form
-          v-if="LoginShow"
-          ref="form2"
+          v-if="activePage === 'login'"
+          ref="loginform"
           v-model="validLog"
           lazy-validation
       >
@@ -121,6 +122,7 @@
             @click="login"
         >
           Войти
+<!--          <router-link to="/home">Войти</router-link>-->
         </v-btn>
 
         <v-btn
@@ -131,10 +133,16 @@
           Сбросить
         </v-btn>
       </v-form>
-      <v-banner v-if="SignedInShow">Вы успешно зарегестрировались. Представьте, что тут случился переход на вашу основную страницу</v-banner>
-      <v-banner v-if="SignedUpShow">Вы успешно вошли в аккаунт. Представьте, что тут случился переход на вашу основную страницу</v-banner>
-      <v-card-text v-if="InvalidPasswordShow" style="color: red">
+      <v-banner v-if="activePage === 'successfulreg'">Вы успешно зарегестрировались. Представьте, что тут случился переход на вашу основную страницу</v-banner>
+      <v-banner v-if="activePage === 'successfullogin'">Вы успешно вошли в аккаунт. Представьте, что тут случился переход на вашу основную страницу</v-banner>
+      <v-card-text v-if="InvalidPasswordShow === true" style="color: red">
         Неверный e-mail или пароль
+      </v-card-text>
+      <v-card-text v-if="UserAlreadyExists === true" style="color: red">
+        Пользователь с таким e-mail уже существует
+      </v-card-text>
+      <v-card-text v-if="UnknownError === true" style="color: red">
+        Неизвестная ошибка
       </v-card-text>
     </v-container>
   </v-app>
@@ -145,6 +153,9 @@ import axios from 'axios';
 export default {
   name: 'LogRegForm',
   data: () => ({
+    activePage: 'register',
+    UserAlreadyExists: false,
+    UnknownError: false,
     RegisterShow: true,
     LoginShow: false,
     SignedUpShow: false,
@@ -196,9 +207,14 @@ export default {
     ],
     checkbox: false,
   }),
+  created() {
+    if (localStorage.userid && localStorage.profile_type) {
+      this.$router.push({path: '/home'});
+    }
+  },
   methods: {
     register () {
-      this.$refs.form1.validate();
+      this.$refs.regform.validate();
       let role = "0";
       let subjid = "0";
       switch (this.$data.select) {
@@ -244,61 +260,94 @@ export default {
       let request = {username: this.$data.email.slice(0, this.$data.email.indexOf("@")),
         name: this.$data.name,
         email: this.$data.email,
-        raw_password: this.$data.password,
+        // raw_password: this.$data.password,
         password: this.$data.password,
         profile_type: role};
       if (role === "3") {
         request = {username: this.$data.email.slice(0, this.$data.email.indexOf("@")),
           name: this.$data.name,
           email: this.$data.email,
-          raw_password: this.$data.password,
+          // raw_password: this.$data.password,
           password: this.$data.password,
           profile_type: role,
           subject: subjid};
       }
-      axios.post("http://127.0.0.1:8000/backend_app/register/", request)
+      axios.post("http://127.0.0.1:8000/backend_app/register", request)
           .then(response => {
             console.log(response.status);
-            // this.resetLogin();
-            this.resetRegister();
-            this.$data.RegisterShow = false;
-            this.$data.SignedInShow=true;
-            this.$data.SignedUpShow = false;
-            this.$data.InvalidPasswordShow=false;
+            if (response.status === 201) {
+              // this.resetLogin();
+              this.resetRegister();
+              this.$data.activePage = 'successfulreg';
+              // this.$data.RegisterShow = false;
+              // this.$data.SignedInShow=true;
+              // this.$data.SignedUpShow = false;
+              this.$data.InvalidPasswordShow=false;
+              this.$data.UserAlreadyExists=false;
+              localStorage.userid = response.data.id;
+              localStorage.profile_type = response.data.profile_type;
+              this.$router.push({path: '/home'});
+            }
+            else {
+              this.$data.InvalidPasswordShow=false;
+              this.$data.UnknownError=false;
+              console.log(response.data.email);
+            }
           })
-          .catch(error => console.log(error));
+          .catch(error => {
+            console.log(error);
+            this.$data.InvalidPasswordShow=false;
+            if (error.response.data.email[0] === "This email has already been registered") {
+              this.$data.UserAlreadyExists=true;
+            }
+            console.log("CATCH");
+          });
+      // App.$data().ShowMainTab = true;
+      // App.$data().ShowLogReg = false;
     },
     login () {
       console.log(this.$data.email);
       console.log(this.$data.password);
-      this.$refs.form2.validate();
+      this.$refs.loginform.validate();
       const request = {};
-      axios.get(`http://127.0.0.1:8000/backend_app/checkuser/?email=${this.$data.email}&password=${this.$data.password}`, request)
+      axios.get(`http://127.0.0.1:8000/backend_app/checkuser?email=${this.$data.email}&password=${this.$data.password}`, request)
           .then(response => {
+            console.log(response.status);
             if (response.status === 200) {
-              console.log(response.status);
               this.resetLogin();
+              this.$data.activePage = 'successfullogin';
               // this.resetRegister();
-              this.$data.LoginShow = false;
-              this.$data.SignedInShow = false;
-              this.$data.SignedUpShow = true;
+              // this.$data.LoginShow = false;
+              // this.$data.SignedInShow = false;
+              // this.$data.SignedUpShow = true;
               this.$data.InvalidPasswordShow = false;
+              this.$data.UserAlreadyExists=false;
+              localStorage.userid = response.data.id;
+              localStorage.profile_type = response.data.profile_type;
+              this.$router.push({path: '/home'});
             }
             else{
               this.$data.InvalidPasswordShow=true;
+              this.$data.UserAlreadyExists=false;
             }
           })
           .catch(error => {
             console.log(error);
             this.$data.InvalidPasswordShow=true;
+            this.$data.UserAlreadyExists=false;
           });
+      // App.$data().ShowMainTab = true;
+      // App.$data().ShowLogReg = false;
     },
     resetRegister () {
-      this.$refs.form1.reset()
+      this.$refs.regform.reset();
+      this.$data.InvalidPasswordShow = false;
+      this.$data.UserAlreadyExists=false;
     },
     resetLogin () {
-      this.$refs.form2.reset();
+      this.$refs.loginform.reset();
       this.$data.InvalidPasswordShow = false;
+      this.$data.UserAlreadyExists=false;
     },
   },
 }
