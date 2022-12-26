@@ -16,6 +16,60 @@
               placeholder="Поиск..."
           ></v-text-field>
         </v-responsive>
+        <v-dialog v-model = search
+                  width = "700">
+          <template v-slot:activator = "{ on, attrs }">
+            <v-btn @click="unknown_search_email = false"
+                   v-if="profile_type === '3'"
+                   class = "mx-12"
+                   v-bind="attrs"
+                   v-on="on"
+
+            >
+              Найти ученика
+            </v-btn>
+            <v-btn @click="unknown_search_email = false"
+                   v-if="profile_type === '2'"
+                   class = "mx-12"
+                   v-bind="attrs"
+                   v-on="on"
+            >
+              Найти преподаватели
+            </v-btn>
+          </template>
+          <v-card v-if="unknown_search_email === false">
+            <v-card-title>
+              Поиск
+            </v-card-title>
+            <v-card-text>
+              Введите email для добавления
+            </v-card-text>
+            <v-col>
+              <v-text-field
+                  v-model = "email_search"
+                  placeholder="Email"
+                  clearable
+              >
+              </v-text-field>
+            </v-col>
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="search_student"
+                     color="primary"
+                     text
+              >
+                Найти
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+          <v-card v-if="unknown_search_email === true">
+            <v-card-title>
+              Человек с таким email не найден
+            </v-card-title>
+          </v-card>
+        </v-dialog>
 
         <v-spacer></v-spacer>
 
@@ -28,10 +82,10 @@
           </v-avatar>
         </v-btn>
         <v-btn
-          icon
-          @click="logout"
+            icon
+            @click="logout"
         >
-            <v-icon> mdi-logout </v-icon>
+          <v-icon> mdi-logout </v-icon>
         </v-btn>
       </v-container>
     </v-app-bar>
@@ -75,33 +129,33 @@
           </v-col>
           <v-col cols="10" v-if="page==='Задания'">
             <TasksTab/>
-<!--            <v-sheet-->
-<!--                class="overflow-y-auto rounded-l-lg"-->
-<!--                min-height="80vh"-->
-<!--                max-height="80vh"-->
-<!--            >-->
-<!--              <v-list-->
-<!--                  class="rounded-l-lg"-->
-<!--                  v-for="n in 15"-->
-<!--                  :key="n"-->
-<!--              >-->
-<!--                <v-list-item-->
-<!--                    link-->
-<!--                    class="v-list-item&#45;&#45;two-line"-->
-<!--                >-->
-<!--                  <v-list-item-content>-->
-<!--                    <v-list-item-title>-->
-<!--                      Задание №{{ n }}-->
-<!--                    </v-list-item-title>-->
-<!--                    <v-list-item-subtitle>-->
-<!--                      Some Text...-->
-<!--                    </v-list-item-subtitle>-->
-<!--                  </v-list-item-content>-->
-<!--                </v-list-item>-->
-<!--                <v-divider class="text-grey-lighten-1"></v-divider>-->
-<!--              </v-list>-->
-<!--              &lt;!&ndash;  &ndash;&gt;-->
-<!--            </v-sheet>-->
+            <!--            <v-sheet-->
+            <!--                class="overflow-y-auto rounded-l-lg"-->
+            <!--                min-height="80vh"-->
+            <!--                max-height="80vh"-->
+            <!--            >-->
+            <!--              <v-list-->
+            <!--                  class="rounded-l-lg"-->
+            <!--                  v-for="n in 15"-->
+            <!--                  :key="n"-->
+            <!--              >-->
+            <!--                <v-list-item-->
+            <!--                    link-->
+            <!--                    class="v-list-item&#45;&#45;two-line"-->
+            <!--                >-->
+            <!--                  <v-list-item-content>-->
+            <!--                    <v-list-item-title>-->
+            <!--                      Задание №{{ n }}-->
+            <!--                    </v-list-item-title>-->
+            <!--                    <v-list-item-subtitle>-->
+            <!--                      Some Text...-->
+            <!--                    </v-list-item-subtitle>-->
+            <!--                  </v-list-item-content>-->
+            <!--                </v-list-item>-->
+            <!--                <v-divider class="text-grey-lighten-1"></v-divider>-->
+            <!--              </v-list>-->
+            <!--              &lt;!&ndash;  &ndash;&gt;-->
+            <!--            </v-sheet>-->
           </v-col>
           <v-col cols="8" v-if="page==='Преподаватели'">
             <TutorsTab/>
@@ -121,6 +175,8 @@ import TasksTab from "@/components/TasksTab";
 import TutorsTab from "@/components/TutorsTab";
 import MessagesTab from "@/components/MessagesTab";
 
+import axios from "axios";
+
 export default {
   name: 'MainTab',
   components: {
@@ -131,29 +187,14 @@ export default {
     MessagesTab
   },
   data: () => ({
+    search: false,
+    users: {},
+    email_search: null,
+    unknown_search_email: false,
     page:'Сообщения',
     subpage: 'none',
     profile_type: '',
     userid: -1,
-    dialogs: [
-      'Раиса',
-      'Марина',
-      'Анатолий',
-      'Даниил',
-      'Степан',
-      'Егор',
-      'Полина',
-      'Варвара',
-      'Дмитрий',
-      'Надежда',
-      'Александра',
-      'Виктория',
-      'Евгений',
-      'Кристина',
-      'Амина',
-      'Руслан',
-      'Марк'
-    ],
     links: [
       'Сообщения',
       'Задания',
@@ -178,6 +219,19 @@ export default {
     this.$data.userid = localStorage.userid;
   },
   methods: {
+    search_student () {
+      axios.get(`http://127.0.0.1:8000/backend_app/user?query=email&email=${this.$data.email_search}`)
+          .then(response => {
+            if (response.status === 200) {
+              this.$data.users = response.data[0];
+              this.$router.push({path: `/profile/${this.$data.users.id}`});
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.unknown_search_email = true;
+          })
+    },
     logout () {
       localStorage.removeItem('userid');
       localStorage.removeItem('profile_type');
